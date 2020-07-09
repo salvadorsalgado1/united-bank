@@ -7,6 +7,7 @@ import Home from '@/components/Home/Home'
 import firebase from 'firebase'
 import Account from '@/components/Account/Account'
 import Finance from '@/components/Finance/Finance'
+import TransferFunds from '@/components/Finance/TransferFunds'
 
 Vue.use(Router)
 
@@ -51,6 +52,15 @@ const router = new Router({
       path:'/home/finance',
       name:'Finance',
       component:Finance,
+      meta:{
+        requiresAuth: true
+      },
+      props:true
+    },
+    {
+      path:'/home/finance/transfer-funds',
+      name:'TransferFunds',
+      component:TransferFunds,
       meta:{
         requiresAuth: true
       },

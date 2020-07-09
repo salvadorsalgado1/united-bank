@@ -16,10 +16,10 @@
                     <option >Savings</option>
                 </select>
                 <label class="bank-label">Bank Account</label>
-                <p v-if="feedback" class="feedback red-text">{{feedback}}</p>
+                <p v-if="feedback" class="feedback red-text center">{{feedback}}</p>
+                <p v-if="feedbackTransfer" class="feedbackTransfer center green-text">{{feedbackTransfer}}</p>
                 <div class="center">
                 <button v-if="this.transferAct" class="btn blue">Initiate Transfer</button>
-
                 </div>
                 </form>
             </div>
@@ -40,6 +40,7 @@ export default {
             feedback:null,
             checkingAmt:null,
             savingsAmt:null,
+            feedbackTransfer:null
             
         }
     },
@@ -48,9 +49,7 @@ export default {
         $('select').formSelect();
         });
     },
-    updated(){
-
-    },
+    
     methods:{
         optionSelect(){
             this.transferAmt = parseInt(this.transferAmt)
@@ -90,21 +89,29 @@ export default {
                     default:console.log("No Action.")
                 }
 //firebase action goes here
+                                
+            console.log("New Checking: " + this.checkingAmt)
+            console.log("New Savings:" + this.savingsAmt)
 
-                                console.log("New Checking: " + this.checkingAmt)
-                                console.log("New Savings:" + this.savingsAmt)
 
-                                let user = firebase.auth().currentUser
-                              let ref =  db.collection('users').where('user_id', '==', user.uid).get()
-                            .then(snapshot =>{
-                                snapshot.forEach((doc)=>{
-                                    db.collection('users').doc(doc.id).update({
-                                         checkingBalance:this.checkingAmt,
-                                        savingsBalance:this.savingsAmt
-                                    })
-                                })
-                            })
 
+
+            this.feedbackTransfer = "Transfer Complete!"
+
+         
+
+
+
+                let user = firebase.auth().currentUser
+                let ref =  db.collection('users').where('user_id', '==', user.uid).get()
+                .then(snapshot =>{
+                    snapshot.forEach((doc)=>{
+                        db.collection('users').doc(doc.id).update({
+                            checkingBalance:this.checkingAmt,
+                            savingsBalance:this.savingsAmt
+                        })
+                    })
+                })
 //--------
             }
         }
@@ -117,6 +124,10 @@ export default {
 }
 .card .card-content .feedback{
     margin-top:20px;
+    font-size:1em;
+}
+.card .card-content .feedbackTransfer{
+    font-size:1.1em;
 }
 .select-wrapper input.select-dropdown{
     color:rgb(6, 106, 163)

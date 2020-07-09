@@ -5,91 +5,56 @@
                 <div class="card top card-home center">
                     <img class="card-image home-logo" src="@/assets/logo.png" />
                     <div class="card-content left-align">
-                          <h2>Good Afternoon, {{this.firstName}}</h2>
-                          <p><strong>Username:<br></strong> 
+                          <h2 class="blue-text">{{this.greeting}}, {{this.firstName}}</h2>
+                          <p class="username-text"><strong>Username:<br></strong> 
                           {{this.username}}</p>
                     </div>
                 </div>
             </div>
             <div class="col m6 s12">
+                
                 <div class="card top card-home">
                     <div class="card-content">
-                        <h2 class="center">Financials</h2>
-                        <hr/>
-                        <ul class="collection">
-                            <li class="collection-item avatar">
-                                <i class="material-icons circle blue">account_balance</i>
-                                <span class="title">Checking</span>
-                                <p>#4353<br>
+                            <h2 class="center teal-text">Financials</h2>
+                            <hr/>
+                            <ul class="collection">
+                                <li class="collection-item avatar">
+                                    <i class="material-icons circle blue">account_balance</i>
+                                    <span class="title">Checking</span>
+                                    <p>#4353<br>
+                                        <strong>${{this.checkingBalance}}</strong>
+                                    </p>
+                                    <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                                </li>
+                                <li class="collection-item avatar">
+                                    <i class="material-icons circle green">beach_access</i>
+                                    <span class="title">Savings</span>
+                                    <p>#6543<br>
+                                        <strong>${{this.savingsBalance}}</strong>
+                                    </p>
+                                    <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                                </li>
+                                </ul>
                                
-                                    <strong>${{this.checkingBalance}}</strong>
-                                </p>
-                                <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                            </li>
-                            <li class="collection-item avatar">
-                                <i class="material-icons circle green">beach_access</i>
-                                <span class="title">Savings</span>
-                                <p>#6543<br>
-                               
-                                    <strong>${{this.savingsBalance}}</strong>
-                                </p>
-                                <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                            </li>
-                        </ul>
-                        <div class="" v-if="transferAct">
-                            <Transfer :transferAct="this.transferAct" :checkingBalance="this.checkingBalance" :savingsBalance="savingsBalance"/>
-                        </div>
-                        <div class="center">
-                            <button @click="transferAccount()" class="btn teal ">{{buttonTransferText}}</button>
-
-                        </div>
-                        </div>
-                </div>
-            </div>
-    </div>
-    <div class="row">
-            <div class="col m6 s12">
-                <div class="card card-home center">
-                     <div class="carousel carousel-slider center">
-                        <div class="carousel-fixed-item center">
-                        <a class="btn waves-effect white grey-text darken-text-2">button</a>
-                        </div>
-                        <div class="carousel-item red white-text" href="#one!">
-                        <h2>Virtual Checking Card</h2>
-                        <p class="white-text">This is your first panel</p>
-                        <p>3212-3423-9564-8800</p>
-                        <div class="container ">
-                            <div class="row center">
-                                <div class="col m6">
-                                    <p>Robert</p>
+                                <div class="center">
+                                    <router-link :to="{name:'TransferFunds', params:{checkingBalance:this.checkingBalance, savingsBalance:this.savingsBalance}}"><a class="btn teal ">Transfer Funds</a></router-link>
+                                    
                                 </div>
-                                <div class="col m6">
-                                    <p>12/24</p>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="carousel-item amber white-text" href="#two!">
-                        <h2>Second Panel</h2>
-                        <p class="white-text">This is your second panel</p>
-                        </div>
-                        <div class="carousel-item green white-text" href="#three!">
-                        <h2>Third Panel</h2>
-                        <p class="white-text">This is your third panel</p>
-                        </div>
-                        <div class="carousel-item blue white-text" href="#four!">
-                        <h2>Fourth Panel</h2>
-                        <p class="white-text">This is your fourth panel</p>
                         </div>
                     </div>
+                    
                 </div>
             </div>
+        <div class="row">
+                <div class="col m6 s12">
+                    <Virtual/>
+                </div>
             <div class="col m4 s12">
                 <div class="card card-home center">
                     <div class="card-content">
                         <h2>Account Information</h2>
-                            <router-link :to="{name:'Account', params:{email:this.email, firstName:this.firstName, social:this.social, username:this.username}}"><a class="btn teal">Account</a></router-link>
-                            <a class="btn red" @click="logout">Logout</a>
+                        <router-link :to="{name:'Account', params:{email:this.email, firstName:this.firstName, social:this.social, username:this.username}}"><a class="btn teal">Account</a></router-link>
+                        <a class="btn red" @click="logout">Logout</a>
                     </div>
                 </div>
             </div>
@@ -100,11 +65,14 @@
 import firebase from 'firebase';
 import db from '../firebase/init'
 import Account from '@/components/Account/Account'
-import Transfer from '@/components/Finance/Transfer'
+import Virtual from '@/components/Virtual/Virtual'
+import TransferFunds from '@/components/Finance/TransferFunds'
 export default {
     name:'Home',
     components:{
-        Transfer
+        
+        Virtual,
+        
     },
     data(){
         return{
@@ -114,41 +82,37 @@ export default {
            username:null,
            checkingBalance:null,
            savingsBalance:null,
-           checking:null,
-           transferAct:false,
-           buttonTransferText:"Transfer"
+           greeting:null,
+           time:null,
+           
+           
         }
     },
+    
     methods:{
          logout(){
                 firebase.auth().signOut().then(()=>{
                     this.$router.push({name:'Login'})
                 })
             },
-            transferAccount(){
-                
-                if(!this.transferAct){
-                    this.transferAct = true;
-                    this.buttonTransferText = "Hide";
-                     console.log("New Checking: " + this.checkingAmt)
-                    console.log("New Savings:" + this.savingsAmt)
-                    console.log("New Checking: " + this.checkingBalance)
-                    console.log("New Savings:" + this.savingsBalance)
-                }else if(this.transferAct){
-                    this.buttonTransferText = "Transfer"
-                    this.transferAct = false
-                }else{
-                    console.log("else")
-                }
-            }
+            
     },
     
-    
+   
     mounted(){
-         $('.carousel.carousel-slider').carousel({
-    fullWidth: true,
-    indicators: true
-  });
+      
+        let date = new Date();
+ let time = date.getHours();
+        if(time < 12){
+            this.greeting = "Good Morning"
+        }else if( time >= 12 && time <= 17){
+            this.greeting = "Good Afternoon"
+        }else if(time>= 17 && time <=24){
+            this.greeting = "Good Evening"
+        }
+
+
+
        let user = firebase.auth().currentUser
        this.email = user.email
 
@@ -170,10 +134,14 @@ export default {
     },
     
 }
-
 </script>
 <style>
-
+.username-text{
+    font-size:1em;
+}
+.card .card-content h2{
+    font-size:1.8em;
+}
 .top
 {
     margin-top:80px;
